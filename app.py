@@ -110,7 +110,7 @@ elif menu == "🔍 Lihat & Cetak":
         st.write("### DATA SISWA BUKU INDUK")
         st.markdown(df_tampil.to_html(index=False, escape=False), unsafe_allow_html=True)
         
-        st.markdown("---")
+        st.markdown('<button onclick="window.print()" style="padding: 12px 24px; background-color: #1E3A8A; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;">🖨️ Cetak / Simpan ke PDF</button>', unsafe_allow_html=True)
         st.subheader("🖨️ Tindakan")
         st.markdown('<button onclick="window.print()" style="padding: 12px 24px; background-color: #1E3A8A; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;">🖨️ Cetak / Simpan ke PDF</button>', unsafe_allow_html=True)
     else:

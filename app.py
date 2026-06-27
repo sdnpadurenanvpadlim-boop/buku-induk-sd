@@ -116,3 +116,10 @@ elif choice == "📥 Import Excel":
                 st.success(f"Proses Selesai! {sukses} data siswa berhasil diimport. Gagal (atau NIS sudah ada): {gagal}")
         except Exception as e:
             st.error(f"Eror saat membaca file: {e}")
+            # Tambahkan tombol ini di bawah tabel/dataframe Kakak
+    st.markdown("---")
+    st.subheader("🖨️ Cetak Dokumen")
+    st.write("Klik tombol di bawah ini untuk mencetak halaman atau menyimpannya sebagai file PDF:")
+    
+    # Tombol pemicu cetak browser
+    st.button("Print / Simpan Ke PDF", on_click=st.js_on_response("window.print()"))

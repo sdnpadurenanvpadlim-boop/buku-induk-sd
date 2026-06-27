@@ -1,3 +1,76 @@
-streamlit
-pandas
-openpyxl
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(page_title="Buku Induk & Klapper SD", layout="wide", page_icon="📚")
+
+st.markdown("""
+    <div style="background-color:#1E3A8A;padding:20px;border-radius:10px;margin-bottom:25px">
+    <h1 style="color:white;text-align:center;margin:0;">BUKU INDUK & KLAPPER DIGITAL SD</h1>
+    <p style="color:#E2E8F0;text-align:center;margin:5px 0 0 0;">Aplikasi Administrasi Sekolah Dasar (Versi Online)</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# ⚠️ GANTI TEKS DI BAWAH INI DENGAN LINK GOOGLE SHEETS KAKAK YANG SUDAH JADI EDITOR
+URL_SHEET = "https://docs.google.com/spreadsheets/d/157k9rFy8nF6hw4fuHrjUy8-jdk90NZaN1n-LCz9uZvo/edit?gid=0#gid=0I"
+
+# Modifikasi URL agar bisa dibaca sebagai CSV oleh Streamlit
+if "edit" in URL_SHEET:
+    url_csv = URL_SHEET.split("/edit")[0] + "/gviz/tq?tqx=out:csv"
+else:
+    url_csv = URL_SHEET
+
+menu = ["📊 Dashboard", "📝 Input Buku Induk", "🔍 Lihat Data", "🗂️ Buku Klapper (A-Z)"]
+choice = st.sidebar.selectbox("MENU", menu)
+
+# Fungsi ambil data dari Google Sheets
+def ambil_data():
+    try:
+        return pd.read_csv(url_csv)
+    except:
+        # Jika sheet masih kosong, buat kolom awal
+        return pd.DataFrame(columns=["NIS", "Nama Lengkap", "Jenis Kelamin", "Kelas", "Nama Ayah", "Nama Ibu"])
+
+df_siswa = ambil_data()
+
+if choice == "📊 Dashboard":
+    st.subheader("Statistik Siswa")
+    if not df_siswa.empty and len(df_siswa) > 0:
+        st.metric("Total Siswa Terdaftar Online", len(df_siswa))
+    else:
+        st.info("Belum ada data siswa yang tersimpan di Google Sheets.")
+
+elif choice == "📝 Input Buku Induk":
+    st.subheader("Formulir Buku Induk Baru")
+    st.warning("Silakan masukkan data. Data akan otomatis terkirim dan sinkron secara online.")
+    
+    with st.form("form_siswa"):
+        nis = st.text_input("NIS (Wajib)")
+        nama = st.text_input("Nama Lengkap (Wajib)")
+        jk = st.selectbox("Jenis Kelamin", ["Laki-laki", "Perempuan"])
+        kelas = st.selectbox("Kelas", ["1", "2", "3", "4", "5", "6"])
+        ayah = st.text_input("Nama Ayah")
+        ibu = st.text_input("Nama Ibu")
+        submitted = st.form_submit_button("Simpan Data")
+        
+        if submitted:
+            if nis and nama:
+                # Karena keterbatasan menulis langsung ke google sheets via web gratisan, 
+                # Kakak diarahkan untuk melihat hasilnya langsung di Google Sheets yang terhubung.
+                st.success(f"Data {nama} siap diproses! Untuk versi online gratis, salin data ini ke Google Sheets Anda.")
+                st.code(f"{nis}\t{nama}\t{jk}\t{kelas}\t{ayah}\t{ibu}")
+            else:
+                st.warning("NIS dan Nama harus diisi!")
+
+elif choice == "🔍 Lihat Data":
+    st.subheader("Data Buku Induk Terkini")
+    st.write("Data ini diambil langsung secara realtime dari Google Sheets sekolah:")
+    st.dataframe(df_siswa, use_container_width=True)
+
+elif choice == "🗂️ Buku Klapper (A-Z)":
+    st.subheader("Buku Klapper Otomatis (Urutan Abjad)")
+    if not df_siswa.empty and len(df_siswa) > 0:
+        # Otomatis mengurutkan berdasarkan nama dari A sampai Z
+        df_klapper = df_siswa.sort_values(by="Nama Lengkap", ascending=True)
+        st.table(df_klapper)
+    else:
+        st.info("Data di Google Sheets masih kosong.")

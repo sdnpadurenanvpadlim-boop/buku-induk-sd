@@ -89,7 +89,7 @@ elif menu == "📥 Import Excel":
         except Exception as e:
             st.error(f"Gagal membaca file Excel. Pastikan format kolom sesuai. Detail: {e}")
 
-# 3. MENU LIHAT & CETAK (YANG LENGKAP)
+# 3. MENU LIHAT & CETAK (YANG PASTI BERHASIL)
 elif menu == "🔍 Lihat & Cetak":
     st.subheader("🗂️ Cetak Data Buku Induk Lengkap")
     
@@ -108,10 +108,44 @@ elif menu == "🔍 Lihat & Cetak":
         df_tampil = df_tampil.rename(columns=nama_kolom_baru)
         
         st.write("### DATA SISWA BUKU INDUK")
-        st.markdown(df_tampil.to_html(index=False, escape=False), unsafe_allow_html=True)
+        # Tampilkan tabel biasa di aplikasi
+        st.dataframe(df_tampil, use_container_width=True)
         
-        st.markdown('<button onclick="window.print()" style="padding: 12px 24px; background-color: #1E3A8A; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;">🖨️ Cetak / Simpan ke PDF</button>', unsafe_allow_html=True)
+        # Meracik file HTML siap cetak di balik layar
+        html_table = df_tampil.to_html(index=False)
+        html_print = f"""
+        <html>
+        <head>
+            <title>Cetak Buku Induk</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; padding: 20px; }}
+                h2 {{ text-align: center; }}
+                table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+                th, td {{ border: 1px solid black; padding: 8px; text-align: left; font-size: 13px; }}
+                th {{ background-color: #f2f2f2; }}
+            </style>
+        </head>
+        <body>
+            <h2>DATA SISWA BUKU INDUK LENGKAP</h2>
+            {html_table}
+            <script>
+                // Begitu file dibuka, otomatis buka jendela Print komputer!
+                window.onload = function() {{ window.print(); }}
+            </script>
+        </body>
+        </html>
+        """
+        
+        st.markdown("---")
         st.subheader("🖨️ Tindakan")
-        st.markdown('<button onclick="window.print()" style="padding: 12px 24px; background-color: #1E3A8A; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;">🖨️ Cetak / Simpan ke PDF</button>', unsafe_allow_html=True)
+        st.write("Klik tombol resmi di bawah untuk mengunduh dokumen, lalu buka file tersebut untuk langsung mencetaknya:")
+        
+        # Tombol download resmi Streamlit (100% bisa diklik)
+        st.download_button(
+            label="📥 Download File Siap Cetak (HTML)",
+            data=html_print,
+            file_name="buku_induk_siap_cetak.html",
+            mime="text/html"
+        )
     else:
         st.info("Belum ada data Buku Induk yang tersimpan. Silakan input data terlebih dahulu atau import file Excel.")

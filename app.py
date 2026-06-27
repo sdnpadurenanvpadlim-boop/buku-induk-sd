@@ -116,10 +116,7 @@ elif choice == "📥 Import Excel":
                 st.success(f"Proses Selesai! {sukses} data siswa berhasil diimport. Gagal (atau NIS sudah ada): {gagal}")
         except Exception as e:
             st.error(f"Eror saat membaca file: {e}")
-            # Tambahkan tombol ini di bawah tabel/dataframe Kakak
+            # GANTI KODE PRINT YANG EROR TADI DENGAN 3 BARIS AMAN INI KAK:
     st.markdown("---")
     st.subheader("🖨️ Cetak Dokumen")
-    st.write("Klik tombol di bawah ini untuk mencetak halaman atau menyimpannya sebagai file PDF:")
-    
-    # Tombol pemicu cetak browser
-    st.button("Print / Simpan Ke PDF", on_click=st.js_on_response("window.print()"))
+    st.markdown('<button onclick="window.print()" style="padding: 10px 20px; background-color: #1E3A8A; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Print / Simpan Ke PDF</button>', unsafe_allow_html=True)
